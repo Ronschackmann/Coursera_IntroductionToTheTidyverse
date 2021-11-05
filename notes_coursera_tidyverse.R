@@ -2,7 +2,13 @@
 install.packages("here")
 library(here)
 getwd()
-here("Week3")
+here()
+# prevent package conflicts, use here::here() instead of here()  to indicate using here argument of here function
+here::here()
+# create new folder and file paths (doesn't creat them, just makes a path to them even if they don't exist)
+here::here("data", "filename.xlsx")
+dir (here())
+# see "ronnumbers4" for example use
 
 install.packages("tidyverse")
 library(tidyverse)
@@ -69,8 +75,8 @@ view(ronnumbers2)
 
 ronnumbers3 <- read_excel("data/filename.xlsx", sheet = "Sheet3", .name_repair = "universal")
 ronnumbers3     
-# specify range to import 
-ronnumbers4 <- read_excel("data/filename.xlsx", .name_repair = "minimal", range = "Sheet3!B2:F5")
+# specify range to import and use "here" function to localize file
+ronnumbers4 <- read_excel(here("data", "filename.xlsx"), .name_repair = "minimal", range = "Sheet3!B2:F5")
 ronnumbers4  
 
 # google sheets ----
