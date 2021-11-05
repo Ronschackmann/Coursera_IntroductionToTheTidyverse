@@ -1,3 +1,4 @@
+# "here" package ----
 install.packages("here")
 library(here)
 getwd()
@@ -47,7 +48,7 @@ tibble(
     `12` = "numeric",
     `:)` = "smile",
 ) 
-# Excel files ---- 
+# "readxl" package ---- 
 install.packages("readxl")
 library(readxl)      
 getwd()
