@@ -2,7 +2,10 @@
 install.packages("here")
 library(here)
 getwd()
-here()
+# move work directory up one folder:
+setwd('../')
+
+
 # prevent package conflicts, use here::here() instead of here()  to indicate using here argument of here function
 here::here()
 # create new folder and file paths (doesn't creat them, just makes a path to them even if they don't exist)
@@ -15,6 +18,7 @@ library(tidyverse)
 packageVersion('dplyr')
 ?slice_
 
+# Coursera "importing data in the tidyverse" -----
 #tibble ----
 # convert dataframe to tibble
 treesdata <- as_tibble(trees)
@@ -79,7 +83,30 @@ ronnumbers3
 ronnumbers4 <- read_excel(here("data", "filename.xlsx"), .name_repair = "minimal", range = "Sheet3!B2:F5")
 ronnumbers4  
 
-# google sheets ----
+# "googlesheets4" package ----
+# reads directly from online sheet
+install.packages("googlesheets4")
+library(googlesheets4)
+library(tidyverse)
+    # log into your google acount, required very time
+    gs4_auth()
+    # list all worksheets on drive, 
+    gs4_find()
+        # list in separate table
+        view(gs4_find())
+    # read a sheet using its ID (from view() function)
+    read_sheet("13yiOPu4crNo2XwZqq55QumahE8LfRpelGRTF-N-cKTs")
+    # read a sheet from web url
+    x <- read_sheet("https://docs.google.com/spreadsheets/d/1nfpDgcXfYgddMYT22VRJUM41IGIhiXC9LMrr03oVb_s/edit#gid=1272124506")
+    view(x)
+        # read specific sheet
+        read_sheet("ID or URL", sheet = 2)
+        # other arguments: 
+            # skip=1 (skips 1st row); 
+            # col_names=FALSE (indicate first row in not col names)
+            # range="A1:G5" (specifically import range)
+            # n_max=100 (indicate max no of rows to import
+            # many other functions at https://googlesheets4.tidyverse.org/reference/index.html
 
-
-
+        #csv
+        
