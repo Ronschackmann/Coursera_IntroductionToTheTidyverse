@@ -2,6 +2,7 @@
 install.packages("here")
 library(here)
 getwd()
+here()
 # move work directory up one folder:
 setwd('../')
 
@@ -108,5 +109,15 @@ library(tidyverse)
             # n_max=100 (indicate max no of rows to import
             # many other functions at https://googlesheets4.tidyverse.org/reference/index.html
 
-        #csv
+#"readr" package (csv) ----
+install.packages("readr")
+library(readr)
+        dir(here("data"))
+        # read csv combined with here:here (or just here) package 
+        df_csv <- read_csv(here::here("data", "example.csv"))
+        df_csv
+    # when file is delimited by other character:
+        # read tsv
+        # df_txt <- read_delim("sample_data.txt", delim = "\t")
+        
         
