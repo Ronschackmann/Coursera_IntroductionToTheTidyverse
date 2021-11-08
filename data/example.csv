@@ -1,4 +1,4 @@
-name	age	blood
-bob	22	O
-rachel	44	B
-hsja	77	E
+name,age,blood
+bob,22,O
+rachel,44,B
+hsja,77,E

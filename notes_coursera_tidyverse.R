@@ -117,7 +117,19 @@ library(readr)
         df_csv <- read_csv(here::here("data", "example.csv"))
         df_csv
     # when file is delimited by other character:
-        # read tsv
-        # df_txt <- read_delim("sample_data.txt", delim = "\t")
+        # read tsv (tab separated)
+        df_txt <- read_delim(here::here("data", "sample_data.txt"), delim = "\t")
+        df_txt
         
-        
+#write CSV/TSV files ----
+library(readr)
+        dir(here("data"))
+        # write a csv file tab or coma delimited:
+            mycsv <- tibble(df<-  tibble(
+                a = 1:5,
+                b = 6:10,
+                c = "high"))
+            mycsv
+        write_delim(mycsv, file = here("data", "my_csv_file.tsv"), delim = "\t")
+        write_csv(mycsv, file = here("data", "my_csv_file.csv"))
+                
