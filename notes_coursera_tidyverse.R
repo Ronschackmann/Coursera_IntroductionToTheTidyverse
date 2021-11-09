@@ -1,11 +1,11 @@
-# "here" package ----
+#week 1----
+## "here" package ----
 install.packages("here")
 library(here)
 getwd()
-here()
+?here()
 # move work directory up one folder:
 setwd('../')
-
 
 # prevent package conflicts, use here::here() instead of here()  to indicate using here argument of here function
 here::here()
@@ -19,7 +19,7 @@ library(tidyverse)
 packageVersion('dplyr')
 ?slice_
 
-# Coursera "importing data in the tidyverse" -----
+#### Coursera "importing data in the tidyverse" -----
 #tibble ----
 # convert dataframe to tibble
 treesdata <- as_tibble(trees)
@@ -59,7 +59,7 @@ tibble(
     `12` = "numeric",
     `:)` = "smile",
 ) 
-# "readxl" package ---- 
+## "readxl" package ---- 
 install.packages("readxl")
 library(readxl)      
 getwd()
@@ -84,7 +84,7 @@ ronnumbers3
 ronnumbers4 <- read_excel(here("data", "filename.xlsx"), .name_repair = "minimal", range = "Sheet3!B2:F5")
 ronnumbers4  
 
-# "googlesheets4" package ----
+## "googlesheets4" package ----
 # reads directly from online sheet
 install.packages("googlesheets4")
 library(googlesheets4)
@@ -109,7 +109,7 @@ library(tidyverse)
             # n_max=100 (indicate max no of rows to import
             # many other functions at https://googlesheets4.tidyverse.org/reference/index.html
 
-#"readr" package (csv) ----
+##"readr" package (csv) ----
 install.packages("readr")
 library(readr)
         dir(here("data"))
@@ -121,7 +121,7 @@ library(readr)
         df_txt <- read_delim(here::here("data", "sample_data.txt"), delim = "\t")
         df_txt
         
-#write CSV/TSV files ----
+##write CSV/TSV files ----
 library(readr)
         dir(here("data"))
         # write a csv file tab or coma delimited:
@@ -133,3 +133,32 @@ library(readr)
         write_delim(mycsv, file = here("data", "my_csv_file.tsv"), delim = "\t")
         write_csv(mycsv, file = here("data", "my_csv_file.csv"))
                 
+        
+#Week2 ----
+    # "jsonlite" package ----
+        # JavaScript Object Notation; 
+        # consists of Key-Value pairs 
+            # eg {"Name": "Isabela"}, “Name” would be a key, “Isabela” would be a value
+        # nested and hierarchical
+            # key-pairs can be organized into different levels (hierarchical) with some levels of information being stored within other levels (nested)
+            # eg: "person" is at top, with 'male' and 'female' being two categories. within male or female the hair color is another level of the hierarchie 
+                # person
+                    # male
+                        # blond
+                        # brunet
+                        # other
+                    # female
+                        # blond
+                        # brunet
+                        # other
+        # generate JSON file
+     json <-
+     '[
+        {"Name" : "Woody", "Age" : 40, "Occupation" : "Sherrif"}
+        {"Name" : "Buzz Lightyear", "Age" : 34, "Occupation" : "Space Ranger"},
+        {"Name" : "Andy", "Occupation" : "Toy Owner"}
+]'
+json  
+
+install.packages("jsonlite")
+library(jsonlite)        
