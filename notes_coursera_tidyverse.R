@@ -151,14 +151,32 @@ library(readr)
                         # blond
                         # brunet
                         # other
-        # generate JSON file
-     json <-
+    # generate JSON file
+     jron <-
      '[
-        {"Name" : "Woody", "Age" : 40, "Occupation" : "Sherrif"}
+        {"Name" : "Woody", "Age" : 40, "Occupation" : "Sherrif"},
         {"Name" : "Buzz Lightyear", "Age" : 34, "Occupation" : "Space Ranger"},
         {"Name" : "Andy", "Occupation" : "Toy Owner"}
 ]'
-json  
+jron  
 
 install.packages("jsonlite")
-library(jsonlite)        
+library(jsonlite)    
+    # convert json file to data frame
+mydf <- fromJSON(jron)
+mydf
+    # convert from data fram to json
+myjron <- toJSON(mydf)
+myjron
+    # read .json file
+dir(here("data"))
+read_json(here("data", "jron_file.json"))
+
+    # "xml2" package ----
+        # Extensible Markup Language (XML)
+        # instead of key-value pairs, uses Nodes, Tags, Elements
+            # $node                             (a node)
+               # <tag>                          (opening tag)
+                # <tag2> more content </tag2>   (an element)
+                # <tag3> more content </tag3>   (an element)
+            # </tag>                            (closing tag)
