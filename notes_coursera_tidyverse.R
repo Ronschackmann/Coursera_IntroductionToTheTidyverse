@@ -174,9 +174,192 @@ read_json(here("data", "jron_file.json"))
 
     # "xml2" package ----
         # Extensible Markup Language (XML)
-        # instead of key-value pairs, uses Nodes, Tags, Elements
+        # instead of key-value pairs, uses Nodes, Tags, Elements (hierarchical and nested like json)
             # $node                             (a node)
                # <tag>                          (opening tag)
                 # <tag2> more content </tag2>   (an element)
                 # <tag3> more content </tag3>   (an element)
             # </tag>                            (closing tag)
+install.packages("xml2")
+library(xml2)
+library(here)
+    #read .XML files
+dir(here("data"))
+read_xml(here("data", "note.xml"))
+
+    # "RSQLite" package Relational data----
+        #relational data is the unique identifier linking different tables
+        #only read in required data, not entire database
+#tools required to work with sql database
+install.packages("RSQLite")
+install.packages("dbplyr")
+install.packages("dplyr")
+library(dbplyr)
+library(dplyr)
+library(RSQLite)
+library(tidyverse)
+    #specify driver (required to connect to database)
+Ronqlite <- dbDriver("SQLite")
+    #connect to database
+dbron <- dbConnect(Ronqlite, here("data", "company.db"))
+    #list all tables in database
+dbListTables(dbron)
+    # extract two tables of interest from database 
+albumsR <- tbl(dbron, "albums")
+artistsR <- tbl(dbron, "artists")
+view(albumsR)
+
+    # Table join (mutating) ----
+    # joins two tables, creating extra columns
+    # see "diagram" folder "table_join_diagram.jpg" -> check 'magick' section!!
+        # inner join
+            # make new table only keep entries present in both tables (based on if the unique identifier is present in both)
+        # left join
+            # all rows in first table will be included in new table, NA's will be generated
+        #  right join
+            # use other table as primary... requires transfor of tables to tibbles first
+        # full join
+    #  inner join example (unique ID is "ArtistId" column)
+innerRon <- inner_join (artistsR, albumsR, by = "ArtistId")
+    view (innerRon)
+    innerRon
+    as_tibble(innerRon)
+    # left join
+leftRon <- (left_join (artistsR, albumsR, by = "ArtistId"))
+    as_tibble(leftRon)
+    #  right join
+rightRon <- (right_join (as_tibble(artistsR), as_tibble(albumsR), by = "ArtistId"))
+    as_tibble (rightRon)    
+    #  full join
+fullRon <- (full_join (as_tibble(artistsR), as_tibble(albumsR), by = "ArtistId"))
+    as_tibble (fullRon)
+    
+    # Table join (filtering) ----
+    # filter one table based on values in another table; the number of columns(variables) does not change does not create new columns
+        # semi_join(x,Y): keep  obsevations in x that have a match in y
+            # eg keep ONLY the artists that also have an album
+        # anti_join(x,y): keep  observations in x that are NOT in y
+            # eg keep all artists that do not have an album
+    # semi_join
+semi_join(artistsR, albumsR, by = "ArtistId")
+    # anti_join
+anti_join(artistsR, albumsR, by = "ArtistId")
+
+# week 3----
+# "rvest" package; Web Scraping ----
+    # uses tags on websites for navigation
+    # requires chrome extension 'SelectorGadget'
+        # go to webpage, activate extension. click on element of interst, will light up all similars. show in bottom box how to call these elements using the rvest package (eg 'strong' for first column entries)
+install.packages("rvest")
+library(rvest)
+    # grab webpage
+packagesRon <- read_html("http://jhudatascience.org/stable_website/webscrape.html")
+    # extract desired element ("strong" identified via 'selectorgadget' extension)
+packagesRon %>%
+    html_nodes("strong") %>%
+    html_text()
+
+    # alle nu.nl headlines
+PackagesNuNL <- read_html("http://www.nu.nl")
+PackagesNuNL %>%
+    html_nodes (".title-wrapper .item-title__title") %>%
+    html_text()
+
+# "httr" package; HyperText Transfer Protocol R ----
+    # API: Application Programming Interfaces (APIs)
+    # 'base endpoint': URL you are requesting info from
+        # eg: https://api.github.com
+        # api site shows which info can be found using the API
+    # function: GET(), HEAD(), PATCH(), PUT(), DELETE(), and POST()
+
+install.packages("httr")
+library(httr)
+library(tidyverse)
+    # get repositories available on my github
+        # save github username as variable
+usernameRon <- 'Ronschackmann'
+        # save 'base endpoint' as variable
+url_git <- 'https://api.github.com/'
+        # construct API request
+            # paste0() function concatenates each piece together to end up with full URL address
+api_response <- GET(url = paste0(url_gitRon, 'users/', usernameRon, '/repos'))
+        # check if request to the API was successfull (should give code '200')
+api_response$status_code
+        # extract content from API response
+repo_content <- content(api_response)
+        # get name and URL for each repo (unclear how to know to use 'name' and 'html_url'...)
+lapply(repo_content, function(x) {
+    df <- data_frame(repoRon = x$name,
+                     addressRon = x$html_url)})%>% 
+    bind_rows()
+names(api_responseRon)
+
+# API obtain CSV file from web ----
+
+    # construct API request and check it works (code '200')
+api_responeRon <- GET(url = "https://raw.githubusercontent.com/fivethirtyeight/data/master/steak-survey/steak-risk-survey.csv")
+api_responeRon$status_code
+    # extract content from API response
+df_steakRon <- content(api_responeRon, type="text/csv")
+
+#  API keys ----
+    # most API's not as open as github
+    # API key grants access
+
+#  "haven" package: import/export SAS SPSS Stata
+install.packages("haven")
+library(haven)
+
+# create stat files using the toystory data; run below if 'mydf' no longer in environment
+        jron <-
+            '[
+                {"Name" : "Woody", "Age" : 40, "Occupation" : "Sherrif"},
+                {"Name" : "Buzz Lightyear", "Age" : 34, "Occupation" : "Space Ranger"},
+                {"Name" : "Andy", "Occupation" : "Toy Owner"}
+        ]'
+        jron  
+        library(jsonlite)    
+        # convert json file to data frame
+        mydf <- fromJSON(jron)
+        mydf
+
+    # SAS file creation (unclear how the toystory data is called..)
+library(here)
+write_sas(data = mydf, path = here::here("data", "mydf.sas7bdat"))
+    # read sas file
+sas_mydf <- read_sas(here::here("data", "mydf.sas7bdat"))
+sas_mydf
+
+    # SPSS file creation and reading
+write_sav(data = mydf, path = here::here("data", "mydf.sav"))
+sav_mydf <- read_sav(here::here("data", "mydf.sav"))
+sav_mydf
+
+    # Stata format creation and reading
+write_dta(data = mydf, path = here::here("data", "mydf.dta"))
+dta_mydf <- read_dta(here::here("data", "mydf.dta"))
+dta_mydf
+
+# "magick" package for image manipulation ----
+        # see vignette: https://cran.r-project.org/web/packages/magick/vignettes/intro.html#drawing_and_graphics
+    # image manipulation
+    # OCR function!
+install.packages("magick")
+library(magick)
+install.packages("tesseract")
+library(tesseract)
+    # read images
+img1 <- image_read ("https://ggplot2.tidyverse.org/logo.png")
+img2 <- image_read ("https://pbs.twimg.com/media/D5bccHZWkAQuPqS.png")
+imgRon <- image_read (here::here("diagram", "table_join_diagram.jpg"))
+print (imgRon)
+    # OCR concatenate and print text
+print (img1)
+cat(image_ocr(img1))
+print (img2)
+cat(image_ocr(img2))
+print(imgRon)
+cat(image_ocr(imgRon))
+
+# "googledrive" package ----
+    # look into, manipulate etc. less functionality vs googlesheets
