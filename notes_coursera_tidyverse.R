@@ -346,8 +346,6 @@ dta_mydf
     # OCR function!
 install.packages("magick")
 library(magick)
-install.packages("tesseract")
-library(tesseract)
     # read images
 img1 <- image_read ("https://ggplot2.tidyverse.org/logo.png")
 img2 <- image_read ("https://pbs.twimg.com/media/D5bccHZWkAQuPqS.png")
@@ -363,3 +361,52 @@ cat(image_ocr(imgRon))
 
 # "googledrive" package ----
     # look into, manipulate etc. less functionality vs googlesheets
+
+##Week 4 ----
+# case study examples ----
+library(tidyverse)
+library(here)
+library(readr)
+dir(here("data"))
+    # find out at which row the data starts (otherwise table generated using first row as column-header)
+read_lines(file = (here("data", "healthcare-coverage.csv")), n_max = 5)
+coverageRon <- read_csv (here("data", "healthcare-coverage.csv"),
+                        skip = 2, #headers start in row3
+                       n_max = which(coverageRon$Location == "Notes")-1) #tail of document has no data, only keep till 'Notes' row and remove (-1) that one
+
+    # need to run above without the n_max row first otherwise, coverageRon is unknown... use the pipe??
+    # if above is run twice, get error ~n_max argument is of length zero (this is because after first round, the rows after 'Notes' are already removed)
+#
+coverageRon
+tail(coverageRon, n = 30)
+view(coverageRon)
+glimpse(coverageRon)
+
+    #figure out first row that contains data
+read_lines(file = here("data", "healthcare-spending.csv"), n_max = 10)
+    #generate table
+spendingRon <- read_csv (here("data", "healthcare-spending.csv"),
+                         skip = 2)
+    #figure out last row that contains data
+tail(spendingRon, n = 20)
+    #cut off the non-data rows
+spendingRon <- read_csv (here("data", "healthcare-spending.csv"),
+                         skip = 2,
+                         n_max = which(spendingRon$Location == "Notes")-1)
+
+tail(spendingRon, n = 20)
+spendingRon
+View(spendingRon)
+dir(here("data"))
+
+#create new folder----
+dir.create(here::here("data", "raw_data"))
+# save coverageRon and spendingRon tables in separate file
+save(coverageRon, spendingRon, file = here::here("data", "raw_data", "case_study_1_rda"))
+
+
+#firearms case study ----
+
+# Is there a relationship between healthcare coverage and healthcare spending in the United States?
+# How does the spending distribution change across geographic regions in the United States?
+# Does the relationship between healthcare coverage and healthcare spending in the United States change from 2013 to 2014?
