@@ -1,3 +1,73 @@
+install.packages("tidyverse")
+library(tidyverse)
+packageVersion('dplyr')
+?slice_
+
+#tibble ----
+# convert dataframe to tibble
+treesdata <- as_tibble(trees)
+
+# view options
+# view entire table in new tab
+view(treesdata)
+# print desired size
+as_tibble (trees) %>%
+    print(n = 5, width = Inf)
+# print x number of random rows
+slice_sample(treesdata, n=10)
+# print top x rows or bottom x rows
+slice_head (treesdata, n=3)    
+slice_tail (treesdata, n=2)
+# print rows with lowest (of Height column, if there is a tie, dont print it), highest values
+slice_min(treesdata, order_by = Height, n=8, with_ties = FALSE)
+slice_max(treesdata, order_by = Height, n=3)
+
+# handmade tibble
+df<-  tibble(
+    a = 1:5,
+    b = 6:10,
+    c = 1,
+    z = (a + b) ^2 + c
+)
+# subsetting ()
+# Shown only column a
+df$a  
+# Shown only column a
+df[["a"]]
+# Shown only first column (which is a)
+df[[1]]
+# generate tibble using 'illegal' column names
+tibble(
+    `two words` = 1:5,
+    `12` = "numeric",
+    `:)` = "smile",
+) 
+# Excel files ---- 
+install.packages("readxl")
+library(readxl)      
+getwd()
+dir()
+#read xls file in folder data (automatic to tibble), select sheet to read, transform into tibble. automatic empty to NA
+ronnumbers <- read_excel("data/filename.xlsx", sheet=2)
+print(ronnumbers)
+#skip first 2 rows, change column names
+ronnumbers2 <- read_excel("data/filename.xlsx", sheet = "Sheet1")
+ronnumbers2 <- read_excel("data/filename.xlsx", col_names = LETTERS[1:4], skip = 3, sheet = 1)
+print(ronnumbers2)      
+view(ronnumbers2)
+# ".name_repair" : check every column name is unique/valid (read_excel does this automatic but otherp packages don't so this helps make tables valid)
+# "unique" -> is default, makes sure all colnames unique otherwise adds ...1
+# "minimal" -> read_excel will not change any column names
+# toupper -> makes all column names capitalized (no quotes as this is a function 'toupper()')
+# "universal" -> if illegal colnames (eg : or name with spaces) `` backticks will be used. with univeral, all illegal are renamed so you no longer have `` in your table
+
+ronnumbers3 <- read_excel("data/filename.xlsx", sheet = "Sheet3", .name_repair = "universal")
+ronnumbers3     
+# specify range to import 
+ronnumbers4 <- read_excel("data/filename.xlsx", .name_repair = "minimal", range = "Sheet3!B2:F5")
+ronnumbers4  
+
+
 #week 1----
 ## "here" package ----
 install.packages("here")
@@ -363,7 +433,7 @@ cat(image_ocr(imgRon))
     # look into, manipulate etc. less functionality vs googlesheets
 
 ##Week 4 ----
-# case study examples ----
+# case study healthcare ----
 library(tidyverse)
 library(here)
 library(readr)
@@ -405,8 +475,109 @@ dir.create(here::here("data", "raw_data"))
 save(coverageRon, spendingRon, file = here::here("data", "raw_data", "case_study_1_rda"))
 
 
-#firearms case study ----
+#download a file from the web----
+        # indicate web address; indicate desired location and filename
+download.file("https://raw.githubusercontent.com/opencasestudies/ocs-police-shootings-firearm-legislation/master/data/sc-est2017-alldata6.csv", here("data", "sc-est2017-alldata6.csv"))
 
-# Is there a relationship between healthcare coverage and healthcare spending in the United States?
-# How does the spending distribution change across geographic regions in the United States?
-# Does the relationship between healthcare coverage and healthcare spending in the United States change from 2013 to 2014?
+# read online xls file without downloading----
+# read xlsx brady data and place in temp location (no downloading)
+url <- "https://github.com/opencasestudies/ocs-police-shootings-firearm-legislation/blob/master/data/Brady-State-Scorecard-2015.xlsx?raw=true"
+GET(url, write_disk(tfRon <- tempfile(fileext = ".xlsx")))
+brady <- read_excel(tfRon, sheet = 1)
+brady
+
+# case study guns----
+install.packages("httr")
+library(httr)
+library(rvest)
+library(tidyverse)
+library(here)
+
+dir (here("data"))
+rm(df_csv)
+
+#read in population characteristics
+    censusRon <- read_csv(here::here("data", "sc-est2017-alldata6.csv"))
+    censusRon
+# read in "killed by law enforcement"
+    counted15 <- read_csv("https://raw.githubusercontent.com/opencasestudies/ocs-police-shootings-firearm-legislation/master/data/the-counted-2015.csv")
+    counted15
+# read in suicide 
+    suicide_all <- read_csv("https://raw.githubusercontent.com/opencasestudies/ocs-police-shootings-firearm-legislation/master/data/suicide_all.csv")
+    suicide_all
+# read in firearm suicide data
+    suicide_firearm <- read_csv("https://raw.githubusercontent.com/opencasestudies/ocs-police-shootings-firearm-legislation/master/data/suicide_firearm.csv")
+    suicide_firearm
+# read xlsx brady data and place in temp location (no downloading)
+    url <- "https://github.com/opencasestudies/ocs-police-shootings-firearm-legislation/blob/master/data/Brady-State-Scorecard-2015.xlsx?raw=true"
+    GET(url, write_disk(tfRon <- tempfile(fileext = ".xlsx")))
+    brady <- read_excel(tfRon, sheet = 1)
+    brady
+# read xls FBI uniform crim report place in temp location
+    url2 <- "https://github.com/opencasestudies/ocs-police-shootings-firearm-legislation/blob/master/data/table_5_crime_in_the_united_states_by_state_2015.xls?raw=true"
+    GET(url2, write_disk(tfRon2 <- tempfile(fileext = ".xls")))
+    crime <- read_excel (tfRon2, sheet = 1, skip = 3)
+    crime
+#seriously, adding more files.. US Census 2010 land area
+    url3 <- "https://github.com/opencasestudies/ocs-police-shootings-firearm-legislation/blob/master/data/LND01.xls?raw=true"
+    GET(url3, write_disk(tfRon3 <- tempfile(fileext = ".xls")))
+    land <- read_excel (tfRon3, sheet = 1)
+    land
+#andMoreData...
+    # specify URL to where we'll be web scraping
+    url <- read_html("https://web.archive.org/web/20210205040250/https://www.bls.gov/lau/lastrk15.htm")
+    # scrape specific table desired
+    out <- html_nodes(url, "table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) 
+    # store as a tibble
+    unemployment <- as_tibble(out[[1]]) 
+    unemployment
+#save all the data we just generated above----
+    save(censusRon, counted15, suicide_all, suicide_firearm, brady, crime, land, unemployment, file = here::here("data", "raw_data", "case_study_2.rda"))
+
+# week 4 Import data final QUiz----
+    Q1 <- read_excel (here::here("data", "excel_data.xlsx"), sheet=2)
+        Q1
+        print (Q1Mean <- mean(Q1$X12))
+        Q1_X12 <- tibble(Q1$X12) #note this tible changed the header!
+        view(Q1_X12)
+        head(Q1_X12)
+        tail(Q1_X12)
+        print (Q1_X12_mean <- mean(Q1_X12$`Q1$X12`)) #let R autofill the column after typing $!!
+
+    Q2_sheet1 <-  read_excel (here::here("data", "excel_data.xlsx"), sheet=1)
+    Q2_sheet2 <-  read_excel (here::here("data", "excel_data.xlsx"), sheet=2)    
+
+    Q2_sheet1    
+    Q2_sheet2    
+    Q2correlation <- cor(Q2_sheet1$X5, Q2_sheet2$X8)    
+    Q2correlation
+
+library(RSQLite)
+    library(tidyverse)
+    library(dplyr)
+    install.packages("corrr")
+    library("corrr")
+    ?filter
+    #specify driver (required to connect to database)
+    Ronqlite <- dbDriver("SQLite")
+    #connect to database
+    Q3_db <- dbConnect(Ronqlite, here("data", "sqlite_data.db"))
+    #list all tables in database
+    dbListTables(Q3_db)
+    # extract table of interest from database 
+    Q3_table1 <- tbl(Q3_db, "table1")
+    view(Q3_table1)
+    #select only rows with ID==8 and summarise to see its 100 rows
+    Q3_table1_ID8 <- Q3_table1 %>%
+        filter(ID == 8)  
+        # view(Q3_table1_ID8)
+    # correlation between columns S2 and S3 added to pipe; not working as right now table is a list instead of eg double, not allowed to convert; completely stuck cant figure this out
+    
+#Q 4
+    Q4xls <- read_excel(here::here("data", "excel_data.xlsx"), sheet=2)
+    view(Q4xls)
+    Q4json <- read_json(here("data", "table2.json"))
+    view(Q4json)    
+    
