@@ -238,9 +238,9 @@ mydf
     # convert from data fram to json
 myjron <- toJSON(mydf)
 myjron
-    # read .json file
+    # read .json file NOTE: include "simplifyVector = TRUE" to make it a proper table!!!
 dir(here("data"))
-read_json(here("data", "jron_file.json"))
+view (read_json(here("data", "jron_file.json"), simplifyVector = TRUE))
 
     # "xml2" package ----
         # Extensible Markup Language (XML)
@@ -537,7 +537,8 @@ rm(df_csv)
     save(censusRon, counted15, suicide_all, suicide_firearm, brady, crime, land, unemployment, file = here::here("data", "raw_data", "case_study_2.rda"))
 
 # week 4 Import data final QUiz----
-    Q1 <- read_excel (here::here("data", "excel_data.xlsx"), sheet=2)
+# Q1
+        Q1 <- read_excel (here::here("data", "excel_data.xlsx"), sheet=2)
         Q1
         print (Q1Mean <- mean(Q1$X12))
         Q1_X12 <- tibble(Q1$X12) #note this tible changed the header!
@@ -546,6 +547,7 @@ rm(df_csv)
         tail(Q1_X12)
         print (Q1_X12_mean <- mean(Q1_X12$`Q1$X12`)) #let R autofill the column after typing $!!
 
+# Q2
     Q2_sheet1 <-  read_excel (here::here("data", "excel_data.xlsx"), sheet=1)
     Q2_sheet2 <-  read_excel (here::here("data", "excel_data.xlsx"), sheet=2)    
 
@@ -554,9 +556,12 @@ rm(df_csv)
     Q2correlation <- cor(Q2_sheet1$X5, Q2_sheet2$X8)    
     Q2correlation
 
-library(RSQLite)
+# Json, xls, SQL combine data problem solved ----
+# two Q's where different data sources were compared but appeared incompatible, now fixed it by 'changing to tibble' and "simplifyVector = TRUE" when importing json (otherwise illegible)
+# Q3 resolved; changed sql to a tibble (see x parameter below)
+    library(RSQLite)
     library(tidyverse)
-    library(dplyr)
+    library(dbplyr)
     install.packages("corrr")
     library("corrr")
     ?filter
@@ -571,13 +576,32 @@ library(RSQLite)
     view(Q3_table1)
     #select only rows with ID==8 and summarise to see its 100 rows
     Q3_table1_ID8 <- Q3_table1 %>%
-        filter(ID == 8)  
+        filter(ID == 8)
+    #change SQL data to tibbles for correlation analysis----
+    x<- as_tibble(Q3_table1_ID8)    
+    view(x)    
+    cor(x$S2, x$S3)
         # view(Q3_table1_ID8)
     # correlation between columns S2 and S3 added to pipe; not working as right now table is a list instead of eg double, not allowed to convert; completely stuck cant figure this out
     
-#Q 4
+#Q 4 resolved, json was not imported properly ("simplifyvector")
+library(jsonlite)
+library(here)    
+library(readxl)
+library(tidyverse)
     Q4xls <- read_excel(here::here("data", "excel_data.xlsx"), sheet=2)
     view(Q4xls)
-    Q4json <- read_json(here("data", "table2.json"))
-    view(Q4json)    
+    Q4json <- read_json(here("data", "table2.json"), simplifyVector = TRUE)
+    view(Q4json)  
+    typeof(Q4xls)
+    typeof(Q4json)
+    x<-as.data.frame(Q4xls)
+    y<-as.data.frame(Q4json)
+    typeof(x)
+    Q4inner <- inner_join(Q4xls, Q4json, by = "ID")
+    view(Q4inner)
+         # cant get this to work either....)
+    
+    
+    
     
