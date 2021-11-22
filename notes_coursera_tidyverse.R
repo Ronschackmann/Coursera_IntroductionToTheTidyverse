@@ -22,6 +22,7 @@ slice_tail (treesdata, n=2)
 slice_min(treesdata, order_by = Height, n=8, with_ties = FALSE)
 slice_max(treesdata, order_by = Height, n=3)
 
+
 # handmade tibble
 df<-  tibble(
     a = 1:5,
